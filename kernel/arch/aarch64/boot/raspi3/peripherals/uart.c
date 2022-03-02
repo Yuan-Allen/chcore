@@ -74,9 +74,12 @@ static void early_uart_send(unsigned int c)
         early_put32(AUX_MU_IO_REG, c);
 }
 
-void uart_send_string(char *str)
+void uart_send_string(char* str)
 {
         /* LAB 1 TODO 3 BEGIN */
-
+        char* p = str;
+        for (; *p != 0; ++p) {
+                early_uart_send(*p);
+        }
         /* LAB 1 TODO 3 END */
 }
