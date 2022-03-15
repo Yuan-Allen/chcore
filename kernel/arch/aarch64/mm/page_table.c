@@ -206,6 +206,47 @@ int query_in_pgtbl(void *pgtbl, vaddr_t va, paddr_t *pa, pte_t **entry)
          * return the pa and pte until a L0/L1 block or page, return
          * `-ENOMAPPING` if the va is not mapped.
          */
+        ptp_t *next_ptp = (ptp_t *)(pgtbl);
+        pte_t *pte = NULL;
+        int ret = 0;
+        // L0
+        if ((ret = get_next_ptp(next_ptp, 0, va, &next_ptp, &pte, false)) < 0) {
+                return ret;
+        };
+
+        // L1
+        if ((ret = get_next_ptp(next_ptp, 1, va, &next_ptp, &pte, false)) < 0) {
+                return ret;
+        }
+        if (ret == BLOCK_PTP) {
+                // pfn是Output address
+                *pa = pte->l1_block.pfn << L1_INDEX_SHIFT; // 左移30位
+                *pa |= GET_VA_OFFSET_L1(va); // 加上偏移量
+                *entry = pte;
+                return 0;
+        }
+
+        // L2
+        if ((ret = get_next_ptp(next_ptp, 2, va, &next_ptp, &pte, false)) < 0) {
+                return ret;
+        };
+
+        if (ret == BLOCK_PTP) {
+                *pa = pte->l2_block.pfn << L2_INDEX_SHIFT;
+                *pa |= GET_VA_OFFSET_L2(va);
+                *entry = pte;
+                return 0;
+        }
+
+        // L3
+        if ((ret = get_next_ptp(next_ptp, 3, va, &next_ptp, &pte, false)) < 0) {
+                return ret;
+        };
+
+        *pa = pte->l3_page.pfn << L3_INDEX_SHIFT;
+        *pa |= GET_VA_OFFSET_L3(va);
+        *entry = pte;
+        return 0;
 
         /* LAB 2 TODO 3 END */
 }
@@ -220,7 +261,27 @@ int map_range_in_pgtbl(void *pgtbl, vaddr_t va, paddr_t pa, size_t len,
          * pte with the help of `set_pte_flags`. Iterate until all pages are
          * mapped.
          */
-
+        int ret = 0;
+        pte_t *pte = NULL;
+        len = ROUND_UP(len, PAGE_SIZE);
+        for (paddr_t pa_end = pa + len; pa < pa_end;
+             pa += PAGE_SIZE, va += PAGE_SIZE) {
+                ptp_t *cur_ptp = (ptp_t *)pgtbl;
+                for (int i = 0; i < 3; ++i) {
+                        if ((ret = get_next_ptp(
+                                     cur_ptp, i, va, &cur_ptp, &pte, true))
+                            < 0) {
+                                return ret;
+                        };
+                }
+                pte = &(cur_ptp->ent[GET_L3_INDEX(va)]);
+                pte->pte = 0; //清空
+                pte->l3_page.is_valid = 1;
+                pte->l3_page.is_page = 1;
+                pte->l3_page.pfn = pa >> PAGE_SHIFT;
+                set_pte_flags(pte, flags, USER_PTE);
+        }
+        return 0;
         /* LAB 2 TODO 3 END */
 }
 
@@ -232,7 +293,21 @@ int unmap_range_in_pgtbl(void *pgtbl, vaddr_t va, size_t len)
          * mark the final level pte as invalid. Iterate until all pages are
          * unmapped.
          */
-
+        int ret = 0;
+        pte_t *pte = NULL;
+        len = ROUND_UP(len, PAGE_SIZE);
+        for (paddr_t va_end = va + len; va < va_end; va += PAGE_SIZE) {
+                ptp_t *cur_ptp = (ptp_t *)pgtbl;
+                for (int i = 0; i < 4; ++i) {
+                        if ((ret = get_next_ptp(
+                                     cur_ptp, i, va, &cur_ptp, &pte, false))
+                            < 0) {
+                                continue;
+                        };
+                }
+                pte->pte = 0; //清空
+        }
+        return 0;
         /* LAB 2 TODO 3 END */
 }
 
