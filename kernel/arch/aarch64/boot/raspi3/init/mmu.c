@@ -75,12 +75,28 @@ void init_boot_pt(void)
         /* TTBR1_EL1 0-1G */
         /* LAB 2 TODO 1 BEGIN */
         /* Step 1: set L0 and L1 page table entry */
-
+        u64 kva = KERNEL_VADDR;
+        boot_ttbr1_l0[GET_L0_INDEX(kva)] = ((u64)boot_ttbr1_l1) | IS_TABLE
+                                           | IS_VALID;
+        boot_ttbr1_l1[GET_L1_INDEX(kva)] = ((u64)boot_ttbr1_l2) | IS_TABLE
+                                           | IS_VALID;
 
         /* Step 2: map PHYSMEM_START ~ PERIPHERAL_BASE with 2MB granularity */
-
+        for (; kva < KERNEL_VADDR + PERIPHERAL_BASE; kva += SIZE_2M) {
+                boot_ttbr1_l2[GET_L2_INDEX(kva)] =
+                        (PHYSMEM_START + GET_L2_INDEX(kva) * SIZE_2M) | UXN
+                        | ACCESSED | NG | INNER_SHARABLE | NORMAL_MEMORY
+                        | IS_VALID;
+        }
 
         /* Step 2: map PERIPHERAL_BASE ~ PHYSMEM_END with 2MB granularity */
+        for (kva = KERNEL_VADDR + PERIPHERAL_BASE;
+             kva < KERNEL_VADDR + PHYSMEM_END;
+             kva += SIZE_2M) {
+                boot_ttbr1_l2[GET_L2_INDEX(kva)] =
+                        (PHYSMEM_START + GET_L2_INDEX(kva) * SIZE_2M) | UXN
+                        | ACCESSED | NG | DEVICE_MEMORY | IS_VALID;
+        }
 
         /* LAB 2 TODO 1 END */
 
