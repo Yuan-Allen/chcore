@@ -67,7 +67,25 @@
 .align	11
 EXPORT(el1_vector)
 /* LAB 3 TODO BEGIN */
+	exception_entry sync_el1t
+	exception_entry irq_el1t
+	exception_entry fiq_el1t
+	exception_entry error_el1t
 
+	exception_entry sync_el1h
+	exception_entry irq_el1h
+	exception_entry fiq_el1h
+	exception_entry error_el1h
+
+	exception_entry sync_el0_64
+	exception_entry irq_el0_64
+	exception_entry fiq_el0_64
+	exception_entry error_el0_64
+
+	exception_entry sync_el0_32
+	exception_entry irq_el0_32
+	exception_entry fiq_el0_32
+	exception_entry error_el0_32
 /* LAB 3 TODO END */
 /*
  * The selected stack pointer can be indicated by a suffix to the Exception Level:
@@ -91,7 +109,7 @@ error_el1t:
 error_el1h:
 sync_el1t:
 	/* LAB 3 TODO BEGIN */
-
+	bl unexpected_handler
 	/* LAB 3 TODO END */
 
 sync_el1h:
@@ -100,7 +118,7 @@ sync_el1h:
 	mrs	x1, esr_el1
 	mrs	x2, elr_el1
 	/* LAB 3 TODO BEGIN */
-
+	bl handle_entry_c
 	/* LAB 3 TODO END */
 	exception_exit /* Lab4: Do not unlock! */
 
