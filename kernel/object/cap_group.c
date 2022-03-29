@@ -293,7 +293,16 @@ struct cap_group *create_root_cap_group(char *name, size_t name_len)
         struct vmspace *vmspace;
         int slot_id;
         /* LAB 3 TODO BEGIN */
-        cap_group = obj_alloc(TYPE_CAP_GROUP, sizeof(*cap_group));
+        struct object *object;
+        int total_size = sizeof(*object) + sizeof(*cap_group);
+        object = kzalloc(total_size);
+        if (!object)
+                return NULL;
+
+        object->type = TYPE_CAP_GROUP;
+        object->size = sizeof(*cap_group);
+        object->refcount = 1;
+        cap_group = (struct cap_group *)object->opaque;
         /* LAB 3 TODO END */
         BUG_ON(!cap_group);
         /* LAB 3 TODO BEGIN */
@@ -307,7 +316,7 @@ struct cap_group *create_root_cap_group(char *name, size_t name_len)
         slot->slot_id = slot_id;
         slot->cap_group = cap_group;
         slot->isvalid = true;
-        slot->object = container_of(cap_group, struct object, opaque);
+        slot->object = object;
         init_list_head(&(slot->copies));
         cap_group->slot_table.slots[slot_id] = slot;
 

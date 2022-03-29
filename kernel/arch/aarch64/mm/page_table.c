@@ -325,7 +325,7 @@ int map_range_in_pgtbl_huge(void *pgtbl, vaddr_t va, paddr_t pa, size_t len,
         const size_t SIZE_2M = 2 * 1024 * 1024;
         const size_t SIZE_1G = 1 * 1024 * 1024 * 1024;
         for (paddr_t pa_end = pa + len; pa < pa_end;) {
-                kinfo("map va: %llx\n", va);
+                // kinfo("map va: %llx\n", va);
                 ptp_t *cur_ptp = (ptp_t *)pgtbl;
                 // L0
                 if ((ret = get_next_ptp(cur_ptp, 0, va, &cur_ptp, &pte, true))
@@ -392,7 +392,7 @@ int unmap_range_in_pgtbl_huge(void *pgtbl, vaddr_t va, size_t len)
         const size_t SIZE_2M = 2 * 1024 * 1024;
         const size_t SIZE_1G = 1 * 1024 * 1024 * 1024;
         for (paddr_t va_end = va + len; va < va_end;) {
-                kinfo("unmap va: %llx\n", va);
+                // kinfo("unmap va: %llx\n", va);
                 ptp_t *cur_ptp = (ptp_t *)pgtbl;
                 for (int i = 0; i < 3; ++i) {
                         if ((ret = get_next_ptp(
