@@ -339,7 +339,7 @@ int map_range_in_pgtbl_huge(void *pgtbl, vaddr_t va, paddr_t pa, size_t len,
                         pte->l1_block.is_valid = 1;
                         pte->l1_block.is_table = 0;
                         pte->l1_block.pfn = pa >> L1_INDEX_SHIFT;
-                        kinfo("L1, pfn: %x\n", pte->l1_block.pfn);
+                        // kinfo("L1, pfn: %x\n", pte->l1_block.pfn);
                         set_pte_flags(pte, flags, USER_PTE);
                         len_left -= SIZE_1G;
                         pa += SIZE_1G;
@@ -357,7 +357,7 @@ int map_range_in_pgtbl_huge(void *pgtbl, vaddr_t va, paddr_t pa, size_t len,
                         pte->l2_block.is_valid = 1;
                         pte->l2_block.is_table = 0;
                         pte->l2_block.pfn = (pa >> L2_INDEX_SHIFT);
-                        kinfo("L2, pfn: %x\n", pte->l2_block.pfn);
+                        // kinfo("L2, pfn: %x\n", pte->l2_block.pfn);
                         set_pte_flags(pte, flags, USER_PTE);
                         len_left -= SIZE_2M;
                         pa += SIZE_2M;
