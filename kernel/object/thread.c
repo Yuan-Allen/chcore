@@ -407,7 +407,7 @@ void sys_thread_exit(void)
         current_thread->thread_ctx->state = TS_EXIT;
         struct object *object =
                 container_of(current_thread, struct object, opaque);
-        object->refcount -= 1;
+        object->refcount = 0;
         obj_free(current_thread);
         current_thread = NULL;
         /* LAB 3 TODO END */
@@ -446,7 +446,7 @@ int sys_set_affinity(u64 thread_cap, s32 aff)
         }
 
         /* LAB 4 TODO BEGIN */
-
+        thread->thread_ctx->affinity = aff;
         /* LAB 4 TODO END */
         if (thread_cap != -1)
                 obj_put((void *)thread);
@@ -469,7 +469,7 @@ s32 sys_get_affinity(u64 thread_cap)
         if (thread == NULL)
                 return -ECAPBILITY;
         /* LAB 4 TODO BEGIN */
-
+        aff = thread->thread_ctx->affinity;
         /* LAB 4 TODO END */
 
         if (thread_cap != -1)

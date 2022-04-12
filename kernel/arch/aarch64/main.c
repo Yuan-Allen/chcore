@@ -66,7 +66,7 @@ void main(paddr_t boot_flag)
         /* Init exception vector */
         arch_interrupt_init();
         /* LAB 4 TODO BEGIN */
-        lock_kernel();
+
         /* LAB 4 TODO END */
         kinfo("[ChCore] interrupt init finished\n");
 
@@ -81,8 +81,6 @@ void main(paddr_t boot_flag)
         /* Other cores are busy looping on the addr, wake up those cores */
         enable_smp_cores(boot_flag);
         kinfo("[ChCore] boot multicore finished\n");
-
-        unlock_kernel();
 
 #ifdef CHCORE_KERNEL_TEST
         run_test();

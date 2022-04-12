@@ -21,6 +21,8 @@ void arch_disable_irqno(int irq)
 
 void arch_interrupt_init_per_cpu(void)
 {
+        timer_init();
+
         disable_irq();
 
         /* platform dependent init */

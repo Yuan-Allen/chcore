@@ -138,7 +138,7 @@ struct thread *rr_sched_choose_thread(void)
 static inline void rr_sched_refill_budget(struct thread *target, u32 budget)
 {
         /* LAB 4 TODO BEGIN */
-
+        target->thread_ctx->sc->budget = budget;
         /* LAB 4 TODO END */
 }
 
