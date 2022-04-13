@@ -306,7 +306,7 @@ struct cap_group *create_root_cap_group(char *name, size_t name_len)
         /* LAB 3 TODO END */
         BUG_ON(!cap_group);
         /* LAB 3 TODO BEGIN */
-        cap_group_init(cap_group, BASE_OBJECT_NUM, 0);
+        cap_group_init(cap_group, BASE_OBJECT_NUM, ROOT_PID);
         slot_id = alloc_slot_id(cap_group);
 
         /* LAB 3 TODO END */
