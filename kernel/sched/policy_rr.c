@@ -161,9 +161,11 @@ int rr_sched(void)
 {
         /* LAB 4 TODO BEGIN */
         // 检查budget是否为0
+        // 就算budget不为0，如果状态为TS_WAITING，那么还是要调度下一个线程的。
         if (current_thread != NULL && current_thread->thread_ctx != NULL
             && current_thread->thread_ctx->sc != NULL
-            && current_thread->thread_ctx->sc->budget != 0) {
+            && current_thread->thread_ctx->sc->budget != 0
+            && current_thread->thread_ctx->state != TS_WAITING) {
                 return 0;
         }
         // 检查old thread状态
@@ -171,11 +173,13 @@ int rr_sched(void)
             && current_thread->thread_ctx->state != TS_EXIT
             && current_thread->thread_ctx->state != TS_WAITING
             && current_thread->thread_ctx->state != TS_RUNNING) {
-                kdebug("current_thread state error\n");
+                kinfo("current_thread state error\n");
                 return 0;
         }
         // enqueue
-        if (current_thread != NULL) {
+        // 如果状态是TS_WAITING，那么先不要enqueue
+        if (current_thread != NULL
+            && current_thread->thread_ctx->state != TS_WAITING) {
                 rr_sched_enqueue(current_thread);
         }
 
