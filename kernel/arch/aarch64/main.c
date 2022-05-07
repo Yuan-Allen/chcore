@@ -121,7 +121,7 @@ void secondary_start(void)
         pmu_init();
 
         /* LAB 4 TODO BEGIN: Set the cpu_status */
-
+        cpu_status[cpuid] = cpu_run;
         /* LAB 4 TODO END */
 #ifdef CHCORE_KERNEL_TEST
         run_test();
