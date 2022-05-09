@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2022 Institute of Parallel And Distributed Systems (IPADS)
  * ChCore-Lab is licensed under the Mulan PSL v1.
- * You can use this software according to the terms and conditions of the Mulan PSL v1.
- * You may obtain a copy of Mulan PSL v1 at:
+ * You can use this software according to the terms and conditions of the Mulan
+ * PSL v1. You may obtain a copy of Mulan PSL v1 at:
  *     http://license.coscl.org.cn/MulanPSL
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
- * PURPOSE.
- * See the Mulan PSL v1 for more details.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+ * KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the
+ * Mulan PSL v1 for more details.
  */
 
 #include <stdio.h>
@@ -23,23 +23,25 @@
 
 extern struct ipc_struct *tmpfs_ipc_struct;
 
+#define BUFLEN 4096
 typedef struct FILE {
-	/* LAB 5 TODO BEGIN */
-
-	/* LAB 5 TODO END */
+        /* LAB 5 TODO BEGIN */
+        char path[BUFLEN];
+        int fd;
+        /* LAB 5 TODO END */
 } FILE;
 
-FILE *fopen(const char * filename, const char * mode);
+FILE *fopen(const char *filename, const char *mode);
 
-size_t fwrite(const void * src, size_t size, size_t nmemb, FILE * f);
+size_t fwrite(const void *src, size_t size, size_t nmemb, FILE *f);
 
-size_t fread(void * destv, size_t size, size_t nmemb, FILE * f);
+size_t fread(void *destv, size_t size, size_t nmemb, FILE *f);
 
 int fclose(FILE *f);
 
-int fscanf(FILE * f, const char * fmt, ...);
+int fscanf(FILE *f, const char *fmt, ...);
 
-int fprintf(FILE * f, const char * fmt, ...);
+int fprintf(FILE *f, const char *fmt, ...);
 
 typedef __builtin_va_list va_list;
 #define va_start(v, l) __builtin_va_start(v, l)
