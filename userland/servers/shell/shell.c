@@ -130,9 +130,50 @@ int do_complement(char *buf, char *complement, int complement_time)
         int offset;
 
         /* LAB 5 TODO BEGIN */
+        struct ipc_msg *ipc_msg = 0;
+        struct fs_request *fr_ptr;
+        int fd = 0;
+        size_t buf_len = strlen(buf);
+
+        // open
+        fd = alloc_fd();
+        ipc_msg = ipc_create_msg(fs_ipc_struct_for_shell, 512, 0);
+        fr_ptr = (struct fs_request *)ipc_get_msg_data(ipc_msg);
+        fr_ptr->req = FS_REQ_OPEN;
+        fr_ptr->open.new_fd = fd;
+        strcpy(fr_ptr->open.pathname, "/");
+        ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
+        ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
+        if (ret < 0) {
+                return ret;
+        }
+
+        // scan
+        ret = getdents(fd, scan_buf, BUFLEN);
+        for (offset = 0; offset < ret; offset += p->d_reclen) {
+                p = (struct dirent *)(scan_buf + offset);
+                get_dent_name(p, name);
+                if (*name != '.' && strncmp(buf, name, buf_len) == 0) {
+                        if (j >= complement_time) {
+                                memset(complement, '\0', BUFLEN);
+                                strcpy(complement, name + buf_len);
+                                r = 1;
+                                break;
+                        } else {
+                                j++;
+                        }
+                }
+        }
+
+        // close
+        ipc_msg = ipc_create_msg(fs_ipc_struct_for_shell, 512, 0);
+        fr_ptr = (struct fs_request *)ipc_get_msg_data(ipc_msg);
+        fr_ptr->req = FS_REQ_CLOSE;
+        fr_ptr->close.fd = fd;
+        ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
+        ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
 
         /* LAB 5 TODO END */
-
         return r;
 }
 
@@ -161,11 +202,27 @@ char *readline(const char *prompt)
 
                 /* LAB 5 TODO BEGIN */
                 /* Fill buf and handle tabs with do_complement(). */
-                buf[ret++] = c;
-                putc(c);
-                if (c == '\r' || c == '\n') {
-                        break;
+                if (ret == 0) {
+                        memset(buf, '\0', BUFLEN);
                 }
+                if (c < 0) {
+                        return NULL;
+                } else if (c == '\t') {
+                        if (do_complement(buf, complement, complement_time)
+                            >= 0) {
+                                complement_time++;
+                                printf("%s ", complement);
+                        }
+                        continue;
+                } else if (c == '\r' || c == '\n') {
+                        printf("\n");
+                        buf[ret++] = '\0';
+                        break;
+                } else {
+                        putc(c);
+                }
+                buf[ret++] = c;
+
                 /* LAB 5 TODO END */
         }
 
