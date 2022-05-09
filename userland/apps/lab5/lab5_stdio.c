@@ -21,6 +21,44 @@ int alloc_fd()
         static int cnt = 0;
         return ++cnt;
 }
+
+void my_itoa(int i, char *str)
+{
+        int power = 0, j = 0;
+        j = i;
+
+        for (power = 1; j > 10; j /= 10)
+                power *= 10;
+
+        for (; power > 0; power /= 10) {
+                *str++ = '0' + i / power;
+                i %= power;
+        }
+        *str = '\0';
+}
+
+int my_atoi(char *str)
+{
+        bool bmin = false;
+        int result = 0;
+
+        if ((*str > '9' || *str < '0') && (*str == '+' || *str == '-')) {
+                if (*str == '-')
+                        bmin = true;
+                str++;
+        }
+
+        while (*str != '\0') {
+                if (*str > '9' || *str < '0')
+                        break;
+
+                result = result * 10 + (*str++ - '0');
+        }
+        if (*str != '\0')
+                return 0;
+
+        return bmin ? -result : result;
+}
 /* LAB 5 TODO END */
 
 FILE *fopen(const char *filename, const char *mode)
@@ -126,7 +164,47 @@ int fclose(FILE *f)
 int fscanf(FILE *f, const char *fmt, ...)
 {
         /* LAB 5 TODO BEGIN */
+        char *p, *sval;
+        char buf[BUFLEN];
+        char parse_buf[BUFLEN];
+        int i = 0, j = 0;
+        va_list ap;
+        va_start(ap, fmt);
 
+        memset(buf, '\0', BUFLEN);
+        memset(parse_buf, '\0', BUFLEN);
+        fread(buf, sizeof(char), sizeof(buf), f);
+
+        // skip space
+        for (; buf[i] == ' '; ++i)
+                ;
+
+        for (p = fmt; *p; ++p) {
+                if (*p != '%') {
+                        continue;
+                }
+                switch (*++p) {
+                case 'd':
+                        for (j = i; buf[j] >= '0' && buf[j] <= '9'; ++j) {
+                                parse_buf[j - i] = buf[j];
+                        }
+                        *va_arg(ap, int *) = my_atoi(parse_buf);
+                        i = j;
+                        for (; buf[i] == ' '; ++i)
+                                ;
+                        memset(parse_buf, '\0', BUFLEN);
+                        break;
+                case 's':
+                        for (sval = va_arg(ap, char *); buf[i] != ' '; sval++)
+                                *sval = buf[i++];
+                        for (; buf[i] == ' '; ++i)
+                                ;
+                        break;
+                default:
+                        break;
+                }
+        }
+        va_end(ap);
         /* LAB 5 TODO END */
         return 0;
 }
@@ -135,7 +213,37 @@ int fscanf(FILE *f, const char *fmt, ...)
 int fprintf(FILE *f, const char *fmt, ...)
 {
         /* LAB 5 TODO BEGIN */
+        char *p, *sval;
+        char buf[BUFLEN];
+        char itoa_buf[BUFLEN];
+        int i = 0, ival = 0;
+        va_list ap;
+        va_start(ap, fmt);
 
+        memset(buf, '\0', BUFLEN);
+        for (p = fmt; *p; ++p) {
+                if (*p != '%') {
+                        buf[i++] = *p;
+                        continue;
+                }
+                switch (*++p) {
+                case 'd':
+                        ival = va_arg(ap, int);
+                        my_itoa(ival, itoa_buf);
+                        strcat(buf, itoa_buf);
+                        i += strlen(itoa_buf);
+                        break;
+                case 's':
+                        for (sval = va_arg(ap, char *); *sval; sval++)
+                                buf[i++] = *sval;
+                        break;
+                default:
+                        buf[i++] = *p;
+                        break;
+                }
+        }
+        va_end(ap);
+        fwrite(buf, sizeof(char), strlen(buf), f);
         /* LAB 5 TODO END */
         return 0;
 }
