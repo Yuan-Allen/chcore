@@ -255,9 +255,6 @@ void print_file_content(char *path)
         fr_ptr->open.new_fd = fd;
         strcpy(fr_ptr->open.pathname, path);
         ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
-        if (ret < 0) {
-                return ret;
-        }
 
         // read
         while (remain > 0) {
@@ -286,7 +283,6 @@ close:
         ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
         ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
 
-        return ret;
         /* LAB 5 TODO END */
 }
 
@@ -310,9 +306,6 @@ void fs_scan(char *path)
         strcpy(fr_ptr->open.pathname, path);
         ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
         ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
-        if (ret < 0) {
-                return ret;
-        }
 
         // scan
         ret = getdents(fd, scan_buf, BUFLEN);
@@ -331,7 +324,6 @@ void fs_scan(char *path)
         ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
         ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
 
-        return ret;
         /* LAB 5 TODO END */
 }
 

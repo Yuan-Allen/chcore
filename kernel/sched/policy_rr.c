@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2022 Institute of Parallel And Distributed Systems (IPADS)
  * ChCore-Lab is licensed under the Mulan PSL v1.
- * You can use this software according to the terms and conditions of the Mulan PSL v1.
- * You may obtain a copy of Mulan PSL v1 at:
+ * You can use this software according to the terms and conditions of the Mulan
+ * PSL v1. You may obtain a copy of Mulan PSL v1 at:
  *     http://license.coscl.org.cn/MulanPSL
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
- * PURPOSE.
- * See the Mulan PSL v1 for more details.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+ * KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ * NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the
+ * Mulan PSL v1 for more details.
  */
 
 /* Scheduler related functions are implemented here */
@@ -314,12 +314,13 @@ void rr_top(void)
         for (i = 0; i < cap_group_num; i++) {
                 printk("== CAP GROUP:%s ==\n",
                        cap_group_buf[i]->cap_group_name);
-                for_each_in_list (thread,
-                                  struct thread,
-                                  node,
-                                  &(cap_group_buf[i]->thread_list)) {
-                        print_thread(thread);
-                }
+                // bug: vmr
+                // for_each_in_list (thread,
+                //                   struct thread,
+                //                   node,
+                //                   &(cap_group_buf[i]->thread_list)) {
+                //         print_thread(thread);
+                // }
                 printk("\n");
         }
 }
