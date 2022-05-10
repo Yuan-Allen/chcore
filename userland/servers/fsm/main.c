@@ -140,8 +140,7 @@ void fsm_server_dispatch(struct ipc_msg *ipc_msg, u64 client_badge)
 
                 strip_path(mpinfo, fr_dispatch->open.pathname);
                 ret = ipc_call(mpinfo->_fs_ipc_struct, ipc_msg_dispatch);
-                ipc_set_msg_data(
-                        ipc_msg, ipc_get_msg_data(ipc_msg_dispatch), 0, ret);
+
                 fsm_set_mount_info_withfd(
                         client_badge, fr->open.new_fd, mpinfo);
                 break;
