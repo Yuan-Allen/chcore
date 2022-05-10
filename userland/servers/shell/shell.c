@@ -165,14 +165,6 @@ int do_complement(char *buf, char *complement, int complement_time)
                 }
         }
 
-        // close
-        ipc_msg = ipc_create_msg(fs_ipc_struct_for_shell, 512, 0);
-        fr_ptr = (struct fs_request *)ipc_get_msg_data(ipc_msg);
-        fr_ptr->req = FS_REQ_CLOSE;
-        fr_ptr->close.fd = fd;
-        ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
-        ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
-
         /* LAB 5 TODO END */
         return r;
 }
@@ -315,14 +307,6 @@ void fs_scan(char *path)
                 if (*name != '.')
                         printf("%s ", name);
         }
-
-        // close
-        ipc_msg = ipc_create_msg(fs_ipc_struct_for_shell, 512, 0);
-        fr_ptr = (struct fs_request *)ipc_get_msg_data(ipc_msg);
-        fr_ptr->req = FS_REQ_CLOSE;
-        fr_ptr->close.fd = fd;
-        ret = ipc_call(fs_ipc_struct_for_shell, ipc_msg);
-        ipc_destroy_msg(fs_ipc_struct_for_shell, ipc_msg);
 
         /* LAB 5 TODO END */
 }
